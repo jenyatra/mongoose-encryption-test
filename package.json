@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "data_loss_when_an_index_added": "node data_loss_when_an_index_added.js",
-    "data_loss_when_an_index_added:detect": "node data_loss_when_an_index_added.js with-detection"
+    "data_loss_when_an_index_added:detect": "node data_loss_when_an_index_added.js with-detection",
+    "data_loss_when_an_index_added:resolve": "node data_loss_when_an_index_added.js with-detection resolve"
   },
   "dependencies": {
     "mongoose-encryption": "https://github.com/joegoldbeck/mongoose-encryption.git#2.1.2",

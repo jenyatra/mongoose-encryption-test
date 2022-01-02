@@ -11,9 +11,15 @@ const signingKey =
 
 
 /** @type {import('mongoose-encryption-conflict-detection/lib/plugins/mongoose-encryption').DecryptionConflictHandler} */
-const handleDecryptionConflict = ({ encryptedFields, unExposedData, unSecretData }) => {
-    console.log({encryptedFields, unExposedData, unSecretData})
-    throw new Error('Conflict detected')
+const handleDecryptionConflict = ({ doc, encryptedFields, unExposedData, unSecretData }) => {
+    if (process.argv[3] === 'resolve') {
+        doc.secretB = unSecretData.secretB
+        console.log('Conflict was resolved: ', {encryptedFields, unExposedData, unSecretData})
+    } else {
+        const error = new Error()
+        error.getDiff = () => ({encryptedFields, unExposedData, unSecretData })
+        throw error
+    }
 }
 
 /**
@@ -35,7 +41,6 @@ NonIndexedSecretSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    handleDecryptionConflict,
 })
 
 const NonIndexedSecretModel = model('NonIndexedSecret', NonIndexedSecretSchema)
@@ -81,16 +86,21 @@ const create_test_record = async () => {
 }
 
 const save_using_indexed_secret_schema = async () => {
-    console.log('Re-saving with indexed `secretB`:')
+    console.log('Re-saving with new schema')
     const test_record = await IndexedSecretModel.findOne({})
     console.log(test_record)
     await test_record.save()
-    console.log('Record was re-saved')
 }
 
 const query_using_original_schema = async () => {
+    console.log('Record content obtained by original schema:')
     const test_record = await NonIndexedSecretModel.findOne({})
-    console.log('Record content:')
+    console.log(test_record)
+}
+
+const query_using_indexed_schema = async () => {
+    console.log('Record content obtained by new schema:')
+    const test_record = await IndexedSecretModel.findOne({})
     console.log(test_record)
 }
 
@@ -99,17 +109,29 @@ const connect_and_run = async () => {
     await connection.db.collection('tests').deleteMany({})
 
     await create_test_record()
+    console.log('')
     console.log('-------------')
     await query_using_original_schema()
+    console.log('')
+    console.log('-------------')
+    await query_using_indexed_schema()
+    console.log('')
     console.log('-------------')
     await save_using_indexed_secret_schema()
+    console.log('')
+    console.log('-------------')
+    await query_using_indexed_schema()
+    console.log('')
     console.log('-------------')
     await query_using_original_schema()
+
 
     await disconnect()
 }
 
 connect_and_run().catch((error) => {
-    if (error.message !== 'Conflict detected') throw error
-    console.log(error.message)
+    if (error.getDiff)
+        console.log('Conflict detected:', error.getDiff())
+    else
+        throw error
 })
