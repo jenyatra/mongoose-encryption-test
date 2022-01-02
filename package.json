@@ -1,0 +1,24 @@
+{
+  "name": "mongoose-encryption-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "with-detection": "node index.js with-detection"
+  },
+  "dependencies": {
+    "mongoose-encryption": "https://github.com/joegoldbeck/mongoose-encryption.git#2.1.2",
+    "mongoose-encryption-conflict-detection": "git@github.com:jenyatra/mongoose-encryption.git#decryption-conflicts-handling"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jenyatra/mongoose-encryption-test.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jenyatra/mongoose-encryption-test/issues"
+  },
+  "homepage": "https://github.com/jenyatra/mongoose-encryption-test#readme"
+}
