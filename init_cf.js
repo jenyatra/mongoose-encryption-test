@@ -11,7 +11,7 @@ const signingKey =
 const OldNestedSchema = new Schema({
     nestedA: String,
     nestedB: String,
-    nestedC: String,
+    notSecret: String,
 }) 
 
 OldNestedSchema.plugin(encrypt, {
@@ -28,6 +28,7 @@ const OldSchema = new Schema(
     {
         secretA: String,
         secretB: String,
+        notSecret: String,
         nested: OldNestedSchema,
         nestedArr: [OldNestedSchema],
     },
@@ -38,7 +39,7 @@ OldSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    excludeFromEncryption: ['nested', 'nestedArr'],
+    excludeFromEncryption: ['notSecret', 'nested', 'nestedArr'],
 })
 
 const OldModel = model('OldModel', OldSchema)
@@ -47,7 +48,7 @@ const OldModel = model('OldModel', OldSchema)
 const NewNestedSchema = new Schema({
     nestedA: String,
     nestedB: String,
-    nestedC: String,
+    notSecret: String,
 }) 
 
 NewNestedSchema.plugin(encrypt_cf, {
@@ -65,6 +66,7 @@ const NewSchema = new Schema(
     {
         secretA: String,
         secretB: String,
+        notSecret: String,
         nested: NewNestedSchema,
         nestedArr: [NewNestedSchema],
     },
@@ -77,7 +79,7 @@ NewSchema.plugin(encrypt_cf, {
     signingKey,
     collectionId: 'tests',
     cfMode: 'store',
-    excludeFromEncryption: ['nested', 'nestedArr'],
+    excludeFromEncryption: ['notSecret', 'nested', 'nestedArr'],
 })
 
 const NewModel = model('NewModel', NewSchema)
@@ -85,22 +87,23 @@ const NewModel = model('NewModel', NewSchema)
 const create_test_record = async () => {
     const test_record = new OldModel({
         secretA: 'Secret A',
-        secretB: 'See if this disappears',
+        secretB: 'Secret B',
+        notSecret: 'notSecret',
         nested: {
             nestedA: 'nestedA',
             nestedB: 'nestedB',
-            nestedC: 'nestedC',
+            notSecret: 'notSecret nested',
         },
         nestedArr: [
             {
                 nestedA: 'nestedA 1',
                 nestedB: 'nestedB 1',
-                nestedC: 'nestedC 1',
+                notSecret: 'notSecret 1',
             },
             {
                 nestedA: 'nestedA 2',
                 nestedB: 'nestedB 2',
-                nestedC: 'nestedC 2',
+                notSecret: 'notSecret 2',
             }
         ],
     })
