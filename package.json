@@ -4,13 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "data_loss_when_an_index_added": "node data_loss_when_an_index_added.js",
-    "data_loss_when_an_index_added:detect": "node data_loss_when_an_index_added.js with-detection",
-    "data_loss_when_an_index_added:resolve": "node data_loss_when_an_index_added.js with-detection resolve"
+    "fields_change": "node fields_change.js",
+    "fields_change:store": "node fields_change.js _cf",
+    "fields_change_deep": "node fields_change_deep.js",
+    "fields_change_deep:store": "node fields_change_deep.js _cf",
+    "fields_change_nested": "node fields_change_nested.js",
+    "fields_change_nested:store": "node fields_change_nested.js _cf"
   },
   "dependencies": {
+    "dotenv": "^10.0.0",
     "mongoose-encryption": "https://github.com/joegoldbeck/mongoose-encryption.git#2.1.2",
-    "mongoose-encryption-conflict-detection": "git@github.com:jenyatra/mongoose-encryption.git#decryption-conflicts-handling"
+    "mongoose-encryption-_cf": "git@github.com:jenyatra/mongoose-encryption.git#_cf1"
   },
   "repository": {
     "type": "git",
