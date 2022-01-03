@@ -28,7 +28,7 @@ OldSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    fieldsList: 'store',
+    cfMode: 'store',
 })
 
 const OldModel = model('OldModel', OldSchema)
@@ -55,7 +55,7 @@ NewSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    fieldsList: 'require',
+    cfMode: 'require',
 })
 
 const NewModel = model('NewModel', NewSchema)

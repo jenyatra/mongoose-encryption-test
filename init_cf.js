@@ -1,9 +1,8 @@
 require('dotenv').config()
 const { Schema, model, connection, connect, disconnect } = require('mongoose')
 
-const encrypt = require(process.argv[2] === '_cf'
-    ? 'mongoose-encryption-_cf'
-    : 'mongoose-encryption')
+const encrypt = require('mongoose-encryption')
+const encrypt_cf = require('mongoose-encryption-_cf')
 
 const encryptionKey = 'CwBDwGUwoM5YzBmzwWPSI+KjBKvWHaablbrEiDYh43Q='
 const signingKey =
@@ -19,7 +18,6 @@ OldNestedSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    cfMode: 'store',
     encryptedFields: ['nestedA', 'nestedB'],
 })
 
@@ -40,7 +38,6 @@ OldSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    cfMode: 'store',
     excludeFromEncryption: ['nested', 'nestedArr'],
 })
 
@@ -53,12 +50,12 @@ const NewNestedSchema = new Schema({
     nestedC: String,
 }) 
 
-NewNestedSchema.plugin(encrypt, {
+NewNestedSchema.plugin(encrypt_cf, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
     cfMode: 'store',
-    encryptedFields: ['nestedB', 'nestedC'],
+    encryptedFields: ['nestedA', 'nestedB'],
 })
 
 /**
@@ -75,7 +72,7 @@ const NewSchema = new Schema(
 )
 
 
-NewSchema.plugin(encrypt, {
+NewSchema.plugin(encrypt_cf, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
@@ -111,11 +108,36 @@ const create_test_record = async () => {
     await test_record.save()
 }
 
-const save_using_new_schema = async () => {
-    console.log('Re-saving with new schema')
-    const [test_record] = await NewModel.find({})
-    console.log(test_record)
-    await test_record.save()
+const list_cfs = async (record) => {
+    await new Promise(
+        (res, rej) => (
+            record.encrypt(err => {
+                if (err) rej(err)
+                else res()
+            })
+        )
+    )
+    console.log('Root _cf:', record.decryptCt(record._ct)._cf)
+    
+    await new Promise(
+        (res, rej) => (
+            record.nested.encrypt(err => {
+                if (err) rej(err)
+                else res()
+            })
+        )
+    )
+    console.log('.nested _cf:', record.nested.decryptCt(record.nested._ct)._cf)
+
+    await new Promise(
+        (res, rej) => (
+            record.nestedArr[0].encrypt(err => {
+                if (err) rej(err)
+                else res()
+            })
+        )
+    )
+    console.log('.nestedArr[0] _cf:', record.nestedArr[0].decryptCt(record.nestedArr[0]._ct)._cf)
 }
 
 const update_ctf_using_new_schema = async () => {
@@ -126,16 +148,11 @@ const update_ctf_using_new_schema = async () => {
     await test_record.save()
 }
 
-const query_using_old_schema = async () => {
-    console.log('Record content obtained by original schema:')
-    const test_record = await OldModel.findOne({})
-    console.log(test_record)
-}
-
 const query_using_new_schema = async () => {
     console.log('Record content obtained by new schema:')
     const [test_record] = await NewModel.find({})
     console.log(test_record)
+    await list_cfs(test_record)
 }
 
 const connect_and_run = async () => {
@@ -145,31 +162,14 @@ const connect_and_run = async () => {
     await create_test_record()
     console.log('')
     console.log('-------------')
-    await query_using_old_schema()
-    console.log('')
-    console.log('-------------')
     await query_using_new_schema()
     console.log('')
     console.log('-------------')
-    await save_using_new_schema()
-    console.log('')
-    console.log('-------------')
-    await query_using_new_schema()
-    console.log('')
-    console.log('-------------')
-    await query_using_old_schema()
 
-    if (process.argv[2] === '_cf') {
-        console.log('')
-        console.log('-------------')
-        await update_ctf_using_new_schema()
-        console.log('')
-        console.log('-------------')
-        await query_using_new_schema()
-        console.log('')
-        console.log('-------------')
-        await query_using_old_schema()
-    }
+    await update_ctf_using_new_schema()
+    console.log('')
+    console.log('-------------')
+    await query_using_new_schema()
 
 
     await disconnect()

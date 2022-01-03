@@ -26,7 +26,7 @@ OldSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    fieldsList: 'store',
+    cfMode: 'store',
     encryptedFields: ['secretA', 'secretB', 'deep.stay_secret', 'deep.not_so_secret'],
 })
 
@@ -50,7 +50,7 @@ NewSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    fieldsList: 'require',
+    cfMode: 'require',
     encryptedFields: ['secretB', 'secretC', 'deep.stay_secret', 'deep.should_be_secret'],
 })
 
