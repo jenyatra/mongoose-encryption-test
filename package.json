@@ -14,7 +14,7 @@
   "dependencies": {
     "dotenv": "^10.0.0",
     "mongoose-encryption": "https://github.com/joegoldbeck/mongoose-encryption.git#2.1.2",
-    "mongoose-encryption-_cf": "git@github.com:jenyatra/mongoose-encryption.git#_cf1"
+    "mongoose-encryption-_cf": "git@github.com:jenyatra/mongoose-encryption.git#_cf"
   },
   "repository": {
     "type": "git",
