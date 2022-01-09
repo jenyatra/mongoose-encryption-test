@@ -5,17 +5,17 @@
   "main": "index.js",
   "scripts": {
     "fields_change": "node fields_change.js",
-    "fields_change:store": "node fields_change.js _cf",
+    "fields_change:cf": "node fields_change.js _cf",
     "fields_change_deep": "node fields_change_deep.js",
-    "fields_change_deep:store": "node fields_change_deep.js _cf",
+    "fields_change_deep:cf": "node fields_change_deep.js _cf",
     "fields_change_nested": "node fields_change_nested.js",
-    "fields_change_nested:store": "node fields_change_nested.js _cf",
+    "fields_change_nested:cf": "node fields_change_nested.js _cf",
     "init_cf": "node init_cf.js"
   },
   "dependencies": {
     "dotenv": "^10.0.0",
     "mongoose-encryption": "https://github.com/joegoldbeck/mongoose-encryption.git#2.1.2",
-    "mongoose-encryption-_cf": "git@github.com:jenyatra/mongoose-encryption.git#_cf"
+    "mongoose-encryption-cf": "git@github.com:jenyatra/mongoose-encryption.git#cf"
   },
   "repository": {
     "type": "git",

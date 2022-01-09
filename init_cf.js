@@ -2,7 +2,7 @@ require('dotenv').config()
 const { Schema, model, connection, connect, disconnect } = require('mongoose')
 
 const encrypt = require('mongoose-encryption')
-const encrypt_cf = require('mongoose-encryption-_cf')
+const encrypt_cf = require('mongoose-encryption-cf')
 
 const encryptionKey = 'CwBDwGUwoM5YzBmzwWPSI+KjBKvWHaablbrEiDYh43Q='
 const signingKey =
@@ -55,7 +55,7 @@ NewNestedSchema.plugin(encrypt_cf, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    cfMode: 'store',
+    cfMode: 'maintenance',
     encryptedFields: ['nestedA', 'nestedB'],
 })
 
@@ -78,7 +78,7 @@ NewSchema.plugin(encrypt_cf, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    cfMode: 'store',
+    cfMode: 'maintenance',
     excludeFromEncryption: ['notSecret', 'nested', 'nestedArr'],
 })
 
@@ -112,35 +112,22 @@ const create_test_record = async () => {
 }
 
 const list_cfs = async (record) => {
-    await new Promise(
-        (res, rej) => (
-            record.encrypt(err => {
-                if (err) rej(err)
-                else res()
-            })
+    const get_cf = async (record) => {
+        await new Promise(
+            (res, rej) => (
+                record.encrypt(err => {
+                    if (err) rej(err)
+                    else res()
+                })
+            )
         )
-    )
-    console.log('Root _cf:', record.decryptCt(record._ct)._cf)
-    
-    await new Promise(
-        (res, rej) => (
-            record.nested.encrypt(err => {
-                if (err) rej(err)
-                else res()
-            })
-        )
-    )
-    console.log('.nested _cf:', record.nested.decryptCt(record.nested._ct)._cf)
 
-    await new Promise(
-        (res, rej) => (
-            record.nestedArr[0].encrypt(err => {
-                if (err) rej(err)
-                else res()
-            })
-        )
-    )
-    console.log('.nestedArr[0] _cf:', record.nestedArr[0].decryptCt(record.nestedArr[0]._ct)._cf)
+        return record.decryptCt(record._ct)._cf
+    }
+
+    console.log('Root _cf:', await get_cf(record))
+    console.log('.nested _cf:', await get_cf(record.nested))
+    console.log('.nestedArr[0] _cf:', await get_cf(record.nestedArr[0]))
 }
 
 const update_ctf_using_new_schema = async () => {

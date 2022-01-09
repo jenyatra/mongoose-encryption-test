@@ -2,7 +2,7 @@ require('dotenv').config()
 const { Schema, model, connection, connect, disconnect } = require('mongoose')
 
 const encrypt = require(process.argv[2] === '_cf'
-    ? 'mongoose-encryption-_cf'
+    ? 'mongoose-encryption-cf'
     : 'mongoose-encryption')
 
 const encryptionKey = 'CwBDwGUwoM5YzBmzwWPSI+KjBKvWHaablbrEiDYh43Q='
@@ -26,7 +26,7 @@ OldSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    cfMode: 'store',
+    cfMode: 'require',
     encryptedFields: ['secretA', 'secretB', 'deep.stay_secret', 'deep.not_so_secret'],
 })
 

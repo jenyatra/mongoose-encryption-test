@@ -2,7 +2,7 @@ require('dotenv').config()
 const { Schema, model, connection, connect, disconnect } = require('mongoose')
 
 const encrypt = require(process.argv[2] === '_cf'
-    ? 'mongoose-encryption-_cf'
+    ? 'mongoose-encryption-cf'
     : 'mongoose-encryption')
 
 const encryptionKey = 'CwBDwGUwoM5YzBmzwWPSI+KjBKvWHaablbrEiDYh43Q='
@@ -19,7 +19,7 @@ OldNestedSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    cfMode: 'store',
+    cfMode: 'require',
     encryptedFields: ['nestedA', 'nestedB'],
 })
 
@@ -40,7 +40,7 @@ OldSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    cfMode: 'store',
+    cfMode: 'require',
     excludeFromEncryption: ['nested', 'nestedArr'],
 })
 
@@ -57,7 +57,7 @@ NewNestedSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    cfMode: 'store',
+    cfMode: 'require',
     encryptedFields: ['nestedB', 'nestedC'],
 })
 
@@ -79,7 +79,7 @@ NewSchema.plugin(encrypt, {
     encryptionKey,
     signingKey,
     collectionId: 'tests',
-    cfMode: 'store',
+    cfMode: 'require',
     excludeFromEncryption: ['nested', 'nestedArr'],
 })
 
@@ -87,8 +87,8 @@ const NewModel = model('NewModel', NewSchema)
 
 const create_test_record = async () => {
     const test_record = new OldModel({
-        secretA: 'Secret A',
-        secretB: 'See if this disappears',
+        secretA: 'secretA',
+        secretB: 'secretB',
         nested: {
             nestedA: 'nestedA',
             nestedB: 'nestedB',
